@@ -26,7 +26,7 @@ const searchPostalCode = async (countryCode,postalCode, res) => {
     let sumLon = 0
     let countRecords = 0
 
-    const jsonArray=await csv().fromFile(`${countryCode}.txt`);
+    const jsonArray=await csv().fromFile(`${__dirname}/${countryCode}.txt`);
 
     if(jsonArray.length === 0) { 
         sendFailure(res, 'Unable to find any data for country')
