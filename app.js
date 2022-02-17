@@ -1,12 +1,9 @@
 const express = require('express')
-var bodyParser = require('body-parser')
 const app = express()
 const port = 5252
 const fs = require('fs')
 const cache = []
 const csv=require('csvtojson')
-
-var jsonParser = bodyParser.json()
 
 const sendFailure = (res, message) => {
   res.send(`
@@ -24,12 +21,17 @@ const searchCache = (countryCode, postalCode) => {
     return undefined
 }
 
-const searchPostalCode = async (countryCode,postalCode) => {
+const searchPostalCode = async (countryCode,postalCode, res) => {
     let sumLat = 0
     let sumLon = 0
     let countRecords = 0
 
     const jsonArray=await csv().fromFile(`./data/${countryCode}.txt`);
+
+    if(jsonArray.length === 0) { 
+        sendFailure(res, 'Unable to find any data for country')
+        return
+    }
 
     const postalCodeLength = postalCode.length
 
@@ -57,17 +59,21 @@ const performSearch = async(countryCode, req, res) => {
 
       if(cached !== undefined) {
           console.log('cache hit!')
-          res.send(cached)
+          res.send({...cached, cached: 'true'})
           return
       }
     
       try {
-        const result = await searchPostalCode(countryCode, req.query.postalCode)
-        res.send(result)
-        cache.push(result)
+        const result = await searchPostalCode(countryCode, req.query.postalCode, res)
+
+        if(result) {
+            res.send(result)
+            cache.push(result)
+        }
+        
       } catch(error) {
           console.log('Encountered exception', error)
-          sendFailure(res, 'Unable to locate postal code')
+          sendFailure(res, `Unable to locate postal code: ${error}`)
       }
 }
 
