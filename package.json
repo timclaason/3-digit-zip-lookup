@@ -1,0 +1,24 @@
+{
+  "name": "3-digit-postal-lookup",
+  "version": "1.0.0",
+  "description": "3-digit postal code API",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timclaason/3-digit-zip-lookup.git"
+  },
+  "author": "Tim Claason",
+  "license": "ISC",
+  "dependencies": {
+    "csvtojson": "^2.0.10",
+    "express": "^4.17.2"
+  },
+  "bugs": {
+    "url": "https://github.com/timclaason/3-digit-zip-lookup/issues"
+  },
+  "homepage": "https://github.com/timclaason/3-digit-zip-lookup#readme"
+}
