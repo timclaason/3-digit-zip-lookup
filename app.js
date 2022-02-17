@@ -29,7 +29,7 @@ const searchPostalCode = async (countryCode,postalCode) => {
     let sumLon = 0
     let countRecords = 0
 
-    const jsonArray=await csv().fromFile(`./data/${countryCode}.txt`);
+    const jsonArray=await csv().fromFile(`${countryCode}.txt`);
 
     const postalCodeLength = postalCode.length
 
