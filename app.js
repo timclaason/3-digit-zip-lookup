@@ -35,9 +35,12 @@ const searchPostalCode = async (countryCode,postalCode, res) => {
 
     const postalCodeLength = postalCode.length
 
+    const items = []
+
     for(const item of jsonArray) {
         const itemPostalCode = item.postalCode.toString()
         if(itemPostalCode.substring(0, postalCodeLength) === postalCode) {
+            items.push(item)
             sumLat += parseFloat(item.lat)
             sumLon += parseFloat(item.lng)
             countRecords++
@@ -46,7 +49,7 @@ const searchPostalCode = async (countryCode,postalCode, res) => {
 
     const avgLat = sumLat / countRecords
     const avgLon = sumLon / countRecords
-    return {'country': countryCode, 'postalCode': postalCode, 'lat': avgLat, 'lon': avgLon}
+    return {'country': countryCode, 'postalCode': postalCode, 'lat': avgLat, 'lon': avgLon, 'items': items}
 }
 
 const performSearch = async(countryCode, req, res) => {
@@ -67,8 +70,11 @@ const performSearch = async(countryCode, req, res) => {
         const result = await searchPostalCode(countryCode, req.query.postalCode, res)
 
         if(result) {
-            res.send(result)
+            res.send({...result, cached: 'false'})
             cache.push(result)
+        }
+        else {
+            sendFailure(res, 'Unable to find postal code')
         }
         
       } catch(error) {
