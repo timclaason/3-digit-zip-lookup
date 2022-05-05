@@ -1,10 +1,8 @@
-const express = require('express')
+import express from 'express'
+import csv from 'csvtojson'
+import { CACHE_LOOKUP_FAILURE, cacheItem, searchCache } from './util/cache.js'
+import { dataDirectory, port } from './config.js'
 const app = express()
-const port = 5252
-const fs = require('fs')
-const cache = []
-const csv=require('csvtojson')
-
 const sendFailure = (res, message) => {
   res.send(`
     {
@@ -13,33 +11,23 @@ const sendFailure = (res, message) => {
   `)
 }
 
-const searchCache = (countryCode, postalCode) => {
-    for(const item of cache) {
-        if(item.country === countryCode && item.postalCode === postalCode)
-            return item
-    }
-    return undefined
-}
-
 const searchPostalCode = async (countryCode,postalCode, res) => {
     let sumLat = 0
     let sumLon = 0
     let countRecords = 0
 
-    const jsonArray=await csv().fromFile(`${__dirname}/data/${countryCode}.txt`);
+    const jsonArray=await csv().fromFile(`${dataDirectory}${countryCode}.txt`);
 
     if(jsonArray.length === 0) { 
         sendFailure(res, 'Unable to find any data for country')
         return
     }
 
-    const postalCodeLength = postalCode.length
-
     const items = []
 
     for(const item of jsonArray) {
         const itemPostalCode = item.postalCode.toString()
-        if(itemPostalCode.substring(0, postalCodeLength) === postalCode) {
+        if(itemPostalCode.substring(0, postalCode.length) === postalCode) {
             items.push(item)
             sumLat += parseFloat(item.lat)
             sumLon += parseFloat(item.lng)
@@ -60,8 +48,7 @@ const performSearch = async(countryCode, req, res) => {
     
       const cached = searchCache(countryCode, req.query.postalCode)
 
-      if(cached !== undefined) {
-          console.log('cache hit!')
+      if(cached !== CACHE_LOOKUP_FAILURE) {
           res.send({...cached, cached: 'true'})
           return
       }
@@ -71,7 +58,7 @@ const performSearch = async(countryCode, req, res) => {
 
         if(result) {
             res.send({...result, cached: 'false'})
-            cache.push(result)
+            cacheItem(result)
         }
         else {
             sendFailure(res, 'Unable to find postal code')
@@ -92,5 +79,5 @@ app.get('/MX', async (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`3-digit postal code search listening at http://localhost:${port}`)
+  console.log(`3-digit postal code search listening on port ${port}`)
 })
