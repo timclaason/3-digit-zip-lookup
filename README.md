@@ -21,7 +21,6 @@ ex.
 ex.
 /US?postalCode=551
 
-## Return data
 {
     "country":"US",
     "postalCode":"551",
@@ -61,3 +60,6 @@ ex.
         {"postalCode":"55150","lat":"44.886640","lng":"-93.165422"},
         {"postalCode":"55155","lat":"44.956026","lng":"-93.082680"}],
     "cached":"false"}
+    
+    ##Warning
+    Passing a lat/long that is not necessarily associated with a valid geographic space will likely cause issues with 3rd party providers that expect valid lat/longs
