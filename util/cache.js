@@ -1,7 +1,7 @@
 // Note: Of course, this could have been a LRU or a call to a REDIS or some other
 // commonly used caching tool.  Such an implementation would be better than this.
 // this is simply a 
-import { maxCacheSize } from "../config"
+import { maxCacheSize } from "../config.js"
 const cache = []
 export const CACHE_LOOKUP_FAILURE = undefined
 
