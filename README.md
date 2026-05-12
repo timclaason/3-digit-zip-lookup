@@ -6,6 +6,7 @@ Routes are GET:  /US and /MX
 
 ex.
 /US?postalCode=55106
+
 /MX?postalCode=00810
 
 ## Sample return data
